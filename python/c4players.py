@@ -7,7 +7,7 @@ class ConnectFourPlayer:
         raise NotImplementedError('Must be implemented by subclass')
 
     def is_automated(self):
-        # AI players should return True, human players should return False
+        # human players should return False
         return True
 
 
