@@ -18,4 +18,9 @@ class ConnectFourAIPlayer(ConnectFourPlayer):
     def is_automated(self):
         return True
 
-
+    def terminalTest(self, board):
+        if self.model.check_for_winner(): # if someone won
+            return True
+        if self.model.check_for_draw(): # the board is full
+            return True
+        return False
