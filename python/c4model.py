@@ -1,4 +1,5 @@
 from c4exceptions import IllegalMoveError
+import copy
 
 PLAYER1 = 1
 PLAYER2 = 2
@@ -153,3 +154,34 @@ class ConnectFourModel:
             self.__result_observers.remove(o)
         except ValueError:
             pass
+
+    def actions(self, state): #returns a list of valid moves from the current state
+        moves = []
+        if state == None:
+            state = self.get_grid()
+        
+        for col in range(NUMCOLS): #NUMCOLS actually has col go from 0-6, not 0-7
+            if state[col][0] == EMPTY: #if the topmost row of a given column is empty (there are 6 rows)
+                moves.append(col)
+                #print(f"Appended move for column: {col}")
+        print(f"Valid moves are: {moves}")
+        return moves
+    
+    def result(self, state, action): #gives a hypothetical board state as the outcome to a potential action
+        #action is an int from 0 to 6
+        #state is the board as it stands right now, which is __grid
+        #board_copy = [col[:] for col in self.__grid] #columns contain the rows, so copying the cols also copies the rows
+        board_copy = copy.deepcopy(state)
+
+        valid_moves = self.actions(state)
+        if action not in valid_moves:
+            print("Illegal move!")
+            return board_copy
+
+        for row in range(NUMROWS-1, -1, -1): #scans the column, from bottom to top.
+            #range(start val, stop val, the change to row after each step)
+            if board_copy[action][row] == EMPTY: #if this spot is empty
+                board_copy[action][row] = self.get_turn()
+                print(f"Player {self.get_turn()} has moved their chip to {(action, row)}")
+                break
+        return board_copy
