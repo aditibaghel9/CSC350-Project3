@@ -120,17 +120,45 @@ class TicTacToeAIPlayer:
             return 'O'
 
     def get_move(self):
-        """INSERT YOUR CODE HERE"""
-        pass
+        state = self.model.get_grid()
+        return self.alpha_beta_search(state)
 
     def alpha_beta_search(self, state):
-        """INSERT YOUR CODE HERE"""
-        pass
+        alpha = float('-inf')
+        beta = float('inf')
+        best_action = None
+        best_value = float('-inf')
+ 
+        for action in self.actions(state):
+            value = self.min_value(self.result(state, action), alpha, beta)
+            if value > best_value:
+                best_value = value
+                best_action = action
+            alpha = max(alpha, best_value)
+ 
+        return best_action
 
     def max_value(self, state, alpha, beta):
-        """INSERT YOUR CODE HERE"""
-        pass
+        if self.terminal_test(state):
+            return self.utility(state)
+ 
+        v = float('-inf')
+        for action in self.actions(state):
+            v = max(v, self.min_value(self.result(state, action), alpha, beta))
+            if v >= beta:
+                return v          # Beta cut-off
+            alpha = max(alpha, v)
+        return v
 
     def min_value(self, state, alpha, beta):
         """INSERT YOUR CODE HERE"""
-        pass
+        if self.terminal_test(state):
+            return self.utility(state)
+ 
+        v = float('inf')
+        for action in self.actions(state):
+            v = min(v, self.max_value(self.result(state, action), alpha, beta))
+            if v <= alpha:
+                return v          # Alpha cut-off
+            beta = min(beta, v)
+        return v

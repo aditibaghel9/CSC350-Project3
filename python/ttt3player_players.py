@@ -142,7 +142,26 @@ class TTT3PlayerAIPlayer:
             return '+'
 
     def get_move(self):
-        """INSERT YOUR CODE HERE -- Should return an integer between 1-16"""
-        pass
+        valid_input = False
+        valid_moves = self.model.get_valid_moves()
+ 
+        while not valid_input:
+            try:
+                move = int(input('Enter move (1-16): '))
+                if move < 1 or move > 16:
+                    raise ValueError()
+                else:
+                    valid_input = True
+ 
+                if move in valid_moves:
+                    return move
+                else:
+                    print('That spot is full. Pick again.')
+                    valid_input = False
+            except ValueError:
+                print('Invalid input.')
+ 
+        # Should not get here
+        return -1
 
 
