@@ -135,7 +135,7 @@ class TTT3PlayerAIPlayer:
                     empties += 1
 
         if empties % 3 == 1:
-            return 'X'
+            return 'X' 
         elif empties % 3 == 0:
             return 'O'
         else:
