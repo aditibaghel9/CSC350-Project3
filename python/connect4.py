@@ -1,6 +1,9 @@
+from xml.parsers.expat import model
+
 import c4model
 import c4players
 import c4controller
+from c4aiplayers import ConnectFourAIPlayer
 from c4exceptions import IllegalMoveError
 
 
@@ -15,7 +18,7 @@ def play_single_game():
 
     # Change the constructor calls to change the players used
     player1 = c4players.ConnectFourHumanPlayer(model)
-    player2 = c4players.ConnectFourRandomPlayer(model)
+    player2 = ConnectFourAIPlayer(model, max_depth=5)  # adjust depth here
 
     # Choose 1 of the Controller/View set-ups below
 
@@ -37,8 +40,8 @@ def play_batch_games(games):
             model = c4model.ConnectFourModel()
 
             # Change the constructor calls to change the players used. Don't use HumanPlayer here.
-            player1 = c4players.ConnectFourRandomPlayer(model)
-            player2 = c4players.ConnectFourRandomPlayer(model)
+            player1 = ConnectFourAIPlayer(model, max_depth=4)
+            player2 = ConnectFourAIPlayer(model, max_depth=6)
 
             controller = c4controller.ConnectFourController(model, player1, player2)
 

@@ -83,7 +83,19 @@ class TicTacToeAIPlayer:
         if self._is_draw(state):
             return 0
 
-        return 0 # Should not happen
+        score = 0
+        opponents = [s for s in ['X', 'O', '+'] if s != self.symbol]
+
+        score += self._count_threats(state, self.symbol, 3) * 10
+        score += self._count_threats(state, self.symbol, 2) * 3
+
+        for opp in opponents:
+            score -= self._count_threats(state, opp, 3) * 10
+            score -= self._count_threats(state, opp, 2) * 3
+
+        return score
+
+        
 
     def _is_draw(self, state):
         all_filled = True
@@ -124,40 +136,41 @@ class TicTacToeAIPlayer:
         return self.alpha_beta_search(state)
 
     def alpha_beta_search(self, state):
+        v= float('-inf')
         alpha = float('-inf')
         beta = float('inf')
         best_action = None
         best_value = float('-inf')
  
         for action in self.actions(state):
-            value = self.min_value(self.result(state, action), alpha, beta)
-            if value > best_value:
-                best_value = value
+            action_value = self.min_value(self.result(state, action), alpha, beta, depth=1)
+            if action_value > v:
+                v=action_value
                 best_action = action
-            alpha = max(alpha, best_value)
+            alpha = max(alpha, v)
  
         return best_action
 
-    def max_value(self, state, alpha, beta):
-        if self.terminal_test(state):
-            return self.utility(state)
+    def max_value(self, state, alpha, beta, depth):
+        if self.terminal_test(state) or depth >= self.max_depth:
+            return self.utility(state, depth)
  
         v = float('-inf')
         for action in self.actions(state):
-            v = max(v, self.min_value(self.result(state, action), alpha, beta))
+            v = max(v, self.min_value(self.result(state, action), alpha, beta, depth + 1))
             if v >= beta:
                 return v          # Beta cut-off
             alpha = max(alpha, v)
         return v
 
-    def min_value(self, state, alpha, beta):
+    def min_value(self, state, alpha, beta, depth):
         """INSERT YOUR CODE HERE"""
-        if self.terminal_test(state):
-            return self.utility(state)
- 
+        if self.terminal_test(state) or depth >= self.max_depth:
+            return self.utility(state, depth)
+
         v = float('inf')
         for action in self.actions(state):
-            v = min(v, self.max_value(self.result(state, action), alpha, beta))
+            v = min(v, self.max_value(self.result(state, action), alpha, beta, depth+1))
             if v <= alpha:
                 return v          # Alpha cut-off
             beta = min(beta, v)

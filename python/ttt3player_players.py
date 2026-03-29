@@ -2,9 +2,11 @@ import copy
 
 
 class TTT3PlayerHumanPlayer:
-    def __init__(self, model, symbol):
+    def __init__(self, model, symbol,):
         self.model = model
         self.symbol = symbol
+       
+
 
     def is_automated(self):
         return False
@@ -34,9 +36,10 @@ class TTT3PlayerHumanPlayer:
 
 
 class TTT3PlayerAIPlayer:
-    def __init__(self, model, symbol):
+    def __init__(self, model, symbol, max_depth=10):
         self.model = model
         self.symbol = symbol
+        self.max_depth = max_depth
 
     def is_automated(self):
         return True
@@ -93,7 +96,17 @@ class TTT3PlayerAIPlayer:
         if self._is_draw(state):
             return 0
 
-        return 0 # Should not happen
+        score = 0
+        opponents = [s for s in ['X', 'O', '+'] if s != self.symbol]
+
+        score += self._count_threats(state, self.symbol, 3) * 10
+        score += self._count_threats(state, self.symbol, 2) * 3
+
+        for opp in opponents:
+            score -= self._count_threats(state, opp, 3) * 10
+            score -= self._count_threats(state, opp, 2) * 3
+
+        return score
 
     def _is_draw(self, state):
         all_filled = True
@@ -163,5 +176,43 @@ class TTT3PlayerAIPlayer:
  
         # Should not get here
         return -1
+    def _count_threats(self, state, symbol, length):
+        count = 0
+        rows = len(state)
+        cols = len(state[0])
+
+        # Horizontal
+        for row in range(rows):
+            for col in range(cols - length + 1):
+                window = [state[row][col + i] for i in range(length)]
+                if all(cell == symbol or cell is None for cell in window):
+                    if window.count(symbol) == length - 1:  # length-1 filled, 1 empty
+                        count += 1
+
+        # Vertical
+        for col in range(cols):
+            for row in range(rows - length + 1):
+                window = [state[row + i][col] for i in range(length)]
+                if all(cell == symbol or cell is None for cell in window):
+                    if window.count(symbol) == length - 1:
+                        count += 1
+
+        # Diagonal \ 
+        for row in range(rows - length + 1):
+            for col in range(cols - length + 1):
+                window = [state[row + i][col + i] for i in range(length)]
+                if all(cell == symbol or cell is None for cell in window):
+                    if window.count(symbol) == length - 1:
+                        count += 1
+
+        # Diagonal /
+        for row in range(length - 1, rows):
+            for col in range(cols - length + 1):
+                window = [state[row - i][col + i] for i in range(length)]
+                if all(cell == symbol or cell is None for cell in window):
+                    if window.count(symbol) == length - 1:
+                        count += 1
+
+        return count
 
 
